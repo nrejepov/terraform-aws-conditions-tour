@@ -10,7 +10,7 @@
     {
       "file": "src/modules/ec2/main.tf",
       "description": "\n\n```js\ndata \"aws_ami\" \"default\" {\n  most_recent = \"true\"\n  filter {\n    name   = \"name\"\n    values = [\"ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*\"]\n  }\n  filter {\n    name   = \"virtualization-type\"\n    values = [\"hvm\"]\n  }\n  owners = [\"099720109477\"]\n}\n\n\n```",
-      "line": 41,
+      "line": 54,
       "title": "AMI Data"
     },
     {
@@ -22,13 +22,13 @@
     {
       "file": "src/modules/ec2/main.tf",
       "description": "\n\n```js\nresource \"aws_instance\" \"server\" {\n    ami           = var.ami != \"\" ? var.ami : data.aws_ami.default.image_id\n    instance_type = var.instance_size\n    tags = {\n        Name = \"calabvm\"\n    }\n}\n```",
-      "line": 33,
+      "line": 39,
       "title": "EC2 Instance"
     },
     {
       "file": "src/modules/ec2/main.tf",
       "description": "The resource block `aws_instance` contains the logic for the `ami` to use. The logic within the expression is called a conditional expression. It follows the following format:\n\n`condition ? true : false`\n\nThe condition is if the variable AMI does not contain an empty string. If it is `true`, then set the AMI to the value of `var.ami`. If it is `false`, set the value of the AMI to the ID of `data.aws_ami.default[0].image_id` which is the AMI ID that was collected in the data block. \n\nThis strategy gives the module the ability to take in AMI ID input or find an AMI on its own and makes the module more dynamic",
-      "line": 27,
+      "line": 28,
       "selection": {
         "start": {
           "line": 1,
@@ -50,7 +50,7 @@
     {
       "file": "src/modules/ec2/variables.tf",
       "description": "\n\n```js\nvariable \"servername\"{\n    description = \"Name of the server\"\n    type = string\n}\nvariable \"ami\" { \n    description = \"AMI ID to deploy\"\n    type = string\n    default = \"\"\n}\nvariable \"instance_size\" {\n    description = \"Size of the EC2 instance\"\n    type = string\n    default = \"t2.micro\"\n}\n```",
-      "line": 14,
+      "line": 27,
       "title": "Variables"
     },
     {
@@ -72,7 +72,7 @@
     {
       "file": "src/main.tf",
       "description": "\n\n```js\nmodule \"webserver\" {\n    source = \"./modules/ec2\"\n    servername = \"calabvm\"\n    instance_size = \"t2.micro\"\n    # Optional AMI ID\n}\n```",
-      "line": 22,
+      "line": 27,
       "title": "EC2 Module"
     },
     {
@@ -88,7 +88,7 @@
     {
       "file": "src/main.tf",
       "description": "Insert the following `ami` attribute to the module configuration:\n\n```js\n    ami = \"ami-0528a5175983e7f28\"\n```\n\n",
-      "line": 17,
+      "line": 18,
       "title": "AMI Attribute"
     },
     {
