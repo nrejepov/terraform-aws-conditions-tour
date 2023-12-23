@@ -1,0 +1,110 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Integrating Conditional Logic into Terraform Configurations",
+  "steps": [
+    {
+      "directory": "src/modules/ec2",
+      "description": "The EC2 module is used in this lab to illustrate the use of conditional logic in Terraform. \n\nThis module will be configured in this lab and called in the **src/main.tf** file to deploy the resources.",
+      "title": "Intro"
+    },
+    {
+      "file": "src/modules/ec2/main.tf",
+      "description": "\n\n```js\ndata \"aws_ami\" \"default\" {\n  most_recent = \"true\"\n  filter {\n    name   = \"name\"\n    values = [\"ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*\"]\n  }\n  filter {\n    name   = \"virtualization-type\"\n    values = [\"hvm\"]\n  }\n  owners = [\"099720109477\"]\n}\n\n\n```",
+      "line": 41,
+      "title": "AMI Data"
+    },
+    {
+      "file": "src/modules/ec2/main.tf",
+      "description": "The `data` block is a data resource type that is used to collect data from the provider. In this case, the data block is of the `aws_ami` resource type, which means the block is used to collect the available AMI in the AWS environment. The filter and owner arguments are used to specify the AMI type to retrieve.",
+      "line": 14,
+      "title": "Description"
+    },
+    {
+      "file": "src/modules/ec2/main.tf",
+      "description": "\n\n```js\nresource \"aws_instance\" \"server\" {\n    ami           = var.ami != \"\" ? var.ami : data.aws_ami.default.image_id\n    instance_type = var.instance_size\n    tags = {\n        Name = \"calabvm\"\n    }\n}\n```",
+      "line": 33,
+      "title": "EC2 Instance"
+    },
+    {
+      "file": "src/modules/ec2/main.tf",
+      "description": "The resource block `aws_instance` contains the logic for the `ami` to use. The logic within the expression is called a conditional expression. It follows the following format:\n\n`condition ? true : false`\n\nThe condition is if the variable AMI does not contain an empty string. If it is `true`, then set the AMI to the value of `var.ami`. If it is `false`, set the value of the AMI to the ID of `data.aws_ami.default[0].image_id` which is the AMI ID that was collected in the data block. \n\nThis strategy gives the module the ability to take in AMI ID input or find an AMI on its own and makes the module more dynamic",
+      "line": 27,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 63
+        },
+        "end": {
+          "line": 1,
+          "character": 66
+        }
+      },
+      "title": "Conditions"
+    },
+    {
+      "file": "src/modules/ec2/main.tf",
+      "description": "The use of `!=` is the inequality operator. They can be used within HCL to define true or false reasoning. Refer to the [Terraform Operators documentation](https://www.terraform.io/docs/configuration/expressions.html#arithmetic-and-logical-operators) to learn about the available operators.",
+      "line": 28,
+      "title": "Operator"
+    },
+    {
+      "file": "src/modules/ec2/variables.tf",
+      "description": "\n\n```js\nvariable \"servername\"{\n    description = \"Name of the server\"\n    type = string\n}\nvariable \"ami\" { \n    description = \"AMI ID to deploy\"\n    type = string\n    default = \"\"\n}\nvariable \"instance_size\" {\n    description = \"Size of the EC2 instance\"\n    type = string\n    default = \"t2.micro\"\n}\n```",
+      "line": 14,
+      "title": "Variables"
+    },
+    {
+      "file": "src/modules/ec2/variables.tf",
+      "description": "The important thing to note about the variables blocks is the AMI variable contains a default value of an empty string (\"\").\n\nThe empty string is the trigger for the conditional logic in **main.tf**. It allows the user of the EC2 module to omit an AMI ID value and have the module collect an AMI ID value on its own. ",
+      "line": 8,
+      "selection": {
+        "start": {
+          "line": 3,
+          "character": 64
+        },
+        "end": {
+          "line": 3,
+          "character": 71
+        }
+      },
+      "title": "AMI Variable"
+    },
+    {
+      "file": "src/main.tf",
+      "description": "\n\n```js\nmodule \"webserver\" {\n    source = \"./modules/ec2\"\n    servername = \"calabvm\"\n    instance_size = \"t2.micro\"\n    # Optional AMI ID\n}\n```",
+      "line": 22,
+      "title": "EC2 Module"
+    },
+    {
+      "directory": "src",
+      "description": "\n\n>> cd src && terraform init",
+      "title": "Init"
+    },
+    {
+      "directory": "src",
+      "description": "Run the following command in the terminal:\n\n>> terraform plan\n\nNotice the AMI data block ran to find an AMI ID in AWS that meets the filter requirements. The execution plan shows the resulting AMI ID value for the **resource \"aws_instance\" \"server\"**",
+      "title": "Plan 1"
+    },
+    {
+      "file": "src/main.tf",
+      "description": "Insert the following `ami` attribute to the module configuration:\n\n```js\n    ami = \"ami-0528a5175983e7f28\"\n```\n\n",
+      "line": 17,
+      "title": "AMI Attribute"
+    },
+    {
+      "directory": "src",
+      "description": "Run the following command and review the changes made using the provided `ami` attribute:\n\n>> terraform plan\n\nNotice that the AMI ID value has been set to the one specified in the module",
+      "title": "Plan 2"
+    },
+    {
+      "directory": "src",
+      "description": "Run the apply command below to deploy your EC2 instance:\n\n>> terraform apply --auto-approve\n\nThe EC2 module has been deployed successfully by specifying the AMI ID. The conditional logic created in the Terraform module makes it dynamic and allows it to be used in several different scenarios.",
+      "title": "Apply"
+    },
+    {
+      "directory": "src",
+      "description": "You've successfully deployed an EC2 instance to the AWS account using conditional logic and a dynamic AMI attribute.\n\nReturn to the Cloud Academy Lab browser tab and run the validation check associated with this lab step.",
+      "title": "Complete"
+    }
+  ]
+}
