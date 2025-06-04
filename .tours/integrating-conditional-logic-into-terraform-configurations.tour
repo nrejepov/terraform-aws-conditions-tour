@@ -9,7 +9,7 @@
     },
     {
       "file": "src/modules/ec2/main.tf",
-      "description": "\n\n```js\ndata \"aws_ami\" \"default\" {\n  most_recent = \"true\"\n  filter {\n    name   = \"name\"\n    values = [\"ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*\"]\n  }\n  filter {\n    name   = \"virtualization-type\"\n    values = [\"hvm\"]\n  }\n  owners = [\"099720109477\"]\n}\n\n\n```",
+      "description": "\n\n```js\ndata \"aws_ami\" \"default\" {\n  most_recent = \"true\"\n  filter {\n    name   = \"name\"\n    values = [\"ubuntu/images/hvm-ssd/ubuntu-noble-24.04-amd64-server-*\"]\n  }\n  filter {\n    name   = \"virtualization-type\"\n    values = [\"hvm\"]\n  }\n  owners = [\"099720109477\"]\n}\n\n\n```",
       "line": 54,
       "title": "AMI Data"
     },
